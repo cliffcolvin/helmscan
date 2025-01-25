@@ -210,7 +210,7 @@ func compareImageVulnerabilities(before, after *helmscanTypes.ContainerImage, co
 }
 
 func extractImagesFromYAML(yamlData []byte) ([]*helmscanTypes.ContainerImage, error) {
-	cmd := exec.Command("bash", "-c", `yq e -o json - | jq -r '.. | .image? | select(.)'`)
+	cmd := exec.Command("bash", "-c", `yq '.. | .image? | select(.)'`)
 	cmd.Stdin = bytes.NewReader(yamlData)
 	output, err := cmd.Output()
 	if err != nil {
@@ -221,6 +221,7 @@ func extractImagesFromYAML(yamlData []byte) ([]*helmscanTypes.ContainerImage, er
 
 	var images []*helmscanTypes.ContainerImage
 	for _, imageString := range imageStrings {
+		imageString = strings.Trim(imageString, "\"")
 		image := parseImageString(imageString)
 		images = append(images, image)
 	}
