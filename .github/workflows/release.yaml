@@ -31,7 +31,7 @@ jobs:
           echo "linux_amd64=$(shasum -a 256 dist/helmscan_Linux_x86_64.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             dist/helmscan_Darwin_arm64.tar.gz
