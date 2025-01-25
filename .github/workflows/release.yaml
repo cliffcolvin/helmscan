@@ -1,0 +1,91 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Build Release Binaries
+        run: make release
+
+      - name: Calculate SHA256
+        id: sha256
+        run: |
+          echo "darwin_arm64=$(shasum -a 256 dist/helmscan_Darwin_arm64.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
+          echo "darwin_amd64=$(shasum -a 256 dist/helmscan_Darwin_x86_64.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
+          echo "linux_amd64=$(shasum -a 256 dist/helmscan_Linux_x86_64.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/helmscan_Darwin_arm64.tar.gz
+            dist/helmscan_Darwin_x86_64.tar.gz
+            dist/helmscan_Linux_x86_64.tar.gz
+
+      - name: Update Homebrew Formula
+        run: |
+          # Extract version from tag
+          VERSION=${GITHUB_REF#refs/tags/v}
+          
+          # Create updated formula content
+          cat > helmscan.rb <<EOL
+          class Helmscan < Formula
+            desc "A tool for scanning Helm charts for vulnerabilities"
+            homepage "https://github.com/${{ github.repository }}"
+            version "${VERSION}"
+
+            # Dependencies
+            depends_on "helm"
+            depends_on "aquasecurity/trivy/trivy"
+            depends_on "yq"
+            depends_on "jq"
+
+            if OS.mac? && Hardware::CPU.arm?
+              url "https://github.com/${{ github.repository }}/releases/download/v${VERSION}/helmscan_Darwin_arm64.tar.gz"
+              sha256 "${{ steps.sha256.outputs.darwin_arm64 }}"
+            elsif OS.mac? && Hardware::CPU.intel?
+              url "https://github.com/${{ github.repository }}/releases/download/v${VERSION}/helmscan_Darwin_x86_64.tar.gz"
+              sha256 "${{ steps.sha256.outputs.darwin_amd64 }}"
+            elsif OS.linux? && Hardware::CPU.intel?
+              url "https://github.com/${{ github.repository }}/releases/download/v${VERSION}/helmscan_Linux_x86_64.tar.gz"
+              sha256 "${{ steps.sha256.outputs.linux_amd64 }}"
+            end
+
+            def install
+              bin.install "helmscan"
+            end
+
+            test do
+              system "\#{bin}/helmscan", "--version"
+            end
+          end
+          EOL
+
+      - name: Create Pull Request for Formula Update
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "chore: update formula to version ${{ github.ref_name }}"
+          title: "chore: update formula to version ${{ github.ref_name }}"
+          body: |
+            Updates the Homebrew formula to version ${{ github.ref_name }}
+            
+            - Updates version number
+            - Updates SHA256 hashes for all architectures
+          branch: update-formula-${{ github.ref_name }}
+          delete-branch: true

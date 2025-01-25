@@ -4,6 +4,23 @@ Container Image and Helm Chart CVE comparison tool
 This tool allows you to scan and compare Container images or Helm charts and analyze their CVE (Common Vulnerabilities and Exposures) reports.
 When comparing Helm charts, the tool will download the charts and scan every container image in the chart.
 
+## Installation
+
+### Using Homebrew
+```bash
+brew tap cliffcolvin/tap
+brew install helmscan
+```
+
+This will automatically install all required dependencies.
+
+## Prerequisites
+The following tools are required and will be automatically installed via Homebrew:
+- [Trivy](https://github.com/aquasecurity/trivy) - for vulnerability scanning
+- [Helm](https://helm.sh) - for chart operations
+- [yq](https://github.com/mikefarah/yq) - for YAML processing
+- [jq](https://stedolan.github.io/jq/) - for JSON processing
+
 ## Usage
 
 The tool supports two main operations:
@@ -57,7 +74,3 @@ working-files/
     trivy_output/
       {image}_trivy_output.json
 ```
-
-## Requirements
-- Trivy must be installed and accessible in your PATH
-- For Helm charts, use the format `repo/chart@version`
