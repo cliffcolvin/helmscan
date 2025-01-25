@@ -78,7 +78,7 @@ jobs:
           EOL
 
       - name: Create Pull Request for Formula Update
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
           commit-message: "chore: update formula to version ${{ github.ref_name }}"
           title: "chore: update formula to version ${{ github.ref_name }}"
