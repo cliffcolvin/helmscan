@@ -383,10 +383,12 @@ func GenerateJSONSeverityCounts(comparison helmscanTypes.HelmComparison) []Sever
 	afterImages := make(map[string]*helmscanTypes.ContainerImage)
 
 	for _, img := range comparison.Before.ContainsImages {
-		beforeImages[img.ImageName] = img
+		fullImageName := fmt.Sprintf("%s/%s:%s", img.Repository, img.ImageName, img.Tag)
+		beforeImages[fullImageName] = img
 	}
 	for _, img := range comparison.After.ContainsImages {
-		afterImages[img.ImageName] = img
+		fullImageName := fmt.Sprintf("%s/%s:%s", img.Repository, img.ImageName, img.Tag)
+		afterImages[fullImageName] = img
 	}
 
 	prevCounts := make(map[string]int)
