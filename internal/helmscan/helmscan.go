@@ -159,10 +159,8 @@ func CompareHelmCharts(before, after helmscanTypes.HelmChart) helmscanTypes.Helm
 			for ID, vuln := range beforeImg.Vulnerabilities {
 				if _, exists := comparison.RemovedCVEs[ID]; !exists {
 					comparison.RemovedCVEs[ID] = make(map[string]helmscanTypes.Vulnerability)
-					comparison.RemovedCVEs[ID][name] = vuln
-				} else {
-					comparison.RemovedCVEs[ID][name] = vuln
 				}
+				comparison.RemovedCVEs[ID][name] = vuln
 			}
 		}
 	}
@@ -173,10 +171,8 @@ func CompareHelmCharts(before, after helmscanTypes.HelmChart) helmscanTypes.Helm
 			for ID, vuln := range afterImg.Vulnerabilities {
 				if _, exists := comparison.AddedCVEs[ID]; !exists {
 					comparison.AddedCVEs[ID] = make(map[string]helmscanTypes.Vulnerability)
-					comparison.AddedCVEs[ID][name] = vuln
-				} else {
-					comparison.AddedCVEs[ID][name] = vuln
 				}
+				comparison.AddedCVEs[ID][name] = vuln
 			}
 		}
 	}
@@ -185,26 +181,26 @@ func CompareHelmCharts(before, after helmscanTypes.HelmChart) helmscanTypes.Helm
 }
 
 func compareImageVulnerabilities(before, after *helmscanTypes.ContainerImage, comparison *helmscanTypes.HelmComparison) {
-	for id, vuln := range before.Vulnerabilities {
-		if _, exists := after.Vulnerabilities[id]; !exists {
-			if _, exists := comparison.RemovedCVEs[id]; !exists {
-				comparison.RemovedCVEs[id] = make(map[string]helmscanTypes.Vulnerability)
+	for ID, vuln := range before.Vulnerabilities {
+		if _, exists := after.Vulnerabilities[ID]; !exists {
+			if _, exists := comparison.RemovedCVEs[ID]; !exists {
+				comparison.RemovedCVEs[ID] = make(map[string]helmscanTypes.Vulnerability)
 			}
-			comparison.RemovedCVEs[id][before.ImageName] = vuln
+			comparison.RemovedCVEs[ID][before.ImageName] = vuln
 		} else {
-			if _, exists := comparison.UnchangedCVEs[id]; !exists {
-				comparison.UnchangedCVEs[id] = make(map[string]helmscanTypes.Vulnerability)
+			if _, exists := comparison.UnchangedCVEs[ID]; !exists {
+				comparison.UnchangedCVEs[ID] = make(map[string]helmscanTypes.Vulnerability)
 			}
-			comparison.UnchangedCVEs[id][before.ImageName] = vuln
+			comparison.UnchangedCVEs[ID][before.ImageName] = vuln
 		}
 	}
 
-	for id, vuln := range after.Vulnerabilities {
-		if _, exists := before.Vulnerabilities[id]; !exists {
-			if _, exists := comparison.AddedCVEs[id]; !exists {
-				comparison.AddedCVEs[id] = make(map[string]helmscanTypes.Vulnerability)
+	for ID, vuln := range after.Vulnerabilities {
+		if _, exists := before.Vulnerabilities[ID]; !exists {
+			if _, exists := comparison.AddedCVEs[ID]; !exists {
+				comparison.AddedCVEs[ID] = make(map[string]helmscanTypes.Vulnerability)
 			}
-			comparison.AddedCVEs[id][after.ImageName] = vuln
+			comparison.AddedCVEs[ID][after.ImageName] = vuln
 		}
 	}
 }
