@@ -110,16 +110,16 @@ func CompareScans(firstScan, secondScan helmscanTypes.ScanResult) *helmscanTypes
 		secondVulns[vuln.ID] = vuln
 	}
 
-	for id, vuln := range firstVulns {
-		if _, exists := secondVulns[id]; exists {
+	for ID, vuln := range firstVulns {
+		if _, exists := secondVulns[ID]; exists {
 			comparison.UnchangedCVEs[vuln.Severity] = append(comparison.UnchangedCVEs[vuln.Severity], vuln)
 		} else {
 			comparison.RemovedCVEs[vuln.Severity] = append(comparison.RemovedCVEs[vuln.Severity], vuln)
 		}
 	}
 
-	for id, vuln := range secondVulns {
-		if _, exists := firstVulns[id]; !exists {
+	for ID, vuln := range secondVulns {
+		if _, exists := firstVulns[ID]; !exists {
 			comparison.AddedCVEs[vuln.Severity] = append(comparison.AddedCVEs[vuln.Severity], vuln)
 		}
 	}

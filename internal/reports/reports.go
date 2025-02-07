@@ -378,15 +378,25 @@ func GenerateJSONSeverityCounts(comparison helmscanTypes.HelmComparison) []Sever
 	severities := []string{"critical", "high", "medium", "low"}
 	counts := make([]SeverityCount, 0, len(severities))
 
-	prevCounts := make(map[string]int)
-	currentCounts := make(map[string]int)
+	// Ensure each CVE is counted only once per image, as duplicate images may exist in the helm chart comparison
+	beforeImages := make(map[string]*helmscanTypes.ContainerImage)
+	afterImages := make(map[string]*helmscanTypes.ContainerImage)
 
 	for _, img := range comparison.Before.ContainsImages {
+		beforeImages[img.ImageName] = img
+	}
+	for _, img := range comparison.After.ContainsImages {
+		afterImages[img.ImageName] = img
+	}
+
+	prevCounts := make(map[string]int)
+	currentCounts := make(map[string]int)
+	for _, img := range beforeImages {
 		for _, vuln := range img.Vulnerabilities {
 			prevCounts[vuln.Severity]++
 		}
 	}
-	for _, img := range comparison.After.ContainsImages {
+	for _, img := range afterImages {
 		for _, vuln := range img.Vulnerabilities {
 			currentCounts[vuln.Severity]++
 		}
