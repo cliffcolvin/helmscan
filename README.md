@@ -74,3 +74,17 @@ working-files/
     trivy_output/
       {image}_trivy_output.json
 ```
+
+
+## Contributing
+
+### Building
+```bash
+go build -o helmscan cmd/app/main.go
+```
+This will build the binary for the current platform.
+
+Installing Trivy:
+```bash
+brew install aquasecurity/trivy/trivy
+```

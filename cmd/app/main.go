@@ -117,11 +117,8 @@ func scanSingleHelmChart(chartRef string, jsonOutput bool, report bool) {
 		return
 	}
 
-	reportOutput := helmscan.GenerateReport(helmscanTypes.HelmComparison{
-		After: result,
-	}, jsonOutput, report)
-
-	fmt.Println(reportOutput)
+	comparison := helmscan.CompareHelmCharts(helmscanTypes.HelmChart{}, result)
+	helmscan.GenerateReport(comparison, jsonOutput, report)
 }
 
 func compareHelmCharts(chartRef1, chartRef2 string, jsonOutput bool, report bool) {

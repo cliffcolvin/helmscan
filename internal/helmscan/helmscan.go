@@ -214,11 +214,19 @@ func extractImagesFromYAML(yamlData []byte) ([]*helmscanTypes.ContainerImage, er
 	}
 
 	imageStrings := strings.Split(strings.TrimSpace(string(output)), "\n")
-
 	var images []*helmscanTypes.ContainerImage
+	m := map[string]bool{} // map to filter out duplicate images
 	for _, imageString := range imageStrings {
 		imageString = strings.Trim(imageString, "\"")
+		// Filter out YAML document separators
+		if imageString == "---" {
+			continue
+		}
 		image := parseImageString(imageString)
+		if _, exists := m[imageString]; exists {
+			continue
+		}
+		m[imageString] = true
 		images = append(images, image)
 	}
 
