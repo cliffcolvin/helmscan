@@ -34,10 +34,6 @@ func init() {
 }
 
 func ScanImage(imageName string) (helmscanTypes.ScanResult, error) {
-	if strings.Contains(imageName, "alpine") {
-		return helmscanTypes.ScanResult{}, nil
-	}
-
 	if err := os.MkdirAll("working-files/tmp/trivy_output", 0755); err != nil {
 		return helmscanTypes.ScanResult{}, fmt.Errorf("failed to create working directory: %w", err)
 	}
