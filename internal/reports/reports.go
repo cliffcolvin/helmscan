@@ -380,7 +380,6 @@ func GenerateJSONSeverityCounts(comparison helmscanTypes.HelmComparison) []Sever
 
 	prevCounts := make(map[string]int)
 	currentCounts := make(map[string]int)
-
 	for _, img := range comparison.Before.ContainsImages {
 		for _, vuln := range img.Vulnerabilities {
 			prevCounts[vuln.Severity]++
