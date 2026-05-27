@@ -43,7 +43,7 @@ func init() {
 	}
 }
 
-func Scan(chartRef string) (helmscanTypes.HelmChart, error) {
+func Scan(chartRef string, ignoreUnfixed bool) (helmscanTypes.HelmChart, error) {
 	if err := os.MkdirAll("working-files/tmp/helm_output", 0755); err != nil {
 		return helmscanTypes.HelmChart{}, fmt.Errorf("error creating working-files/tmp/helm_output directory: %w", err)
 	}
@@ -89,7 +89,7 @@ func Scan(chartRef string) (helmscanTypes.HelmChart, error) {
 	var scanErrors []string
 	for id, img := range images {
 		imageName := fmt.Sprintf("%s/%s:%s", img.Repository, img.ImageName, img.Tag)
-		scanResult, err := imageScan.ScanImage(imageName)
+		scanResult, err := imageScan.ScanImage(imageName, ignoreUnfixed)
 		if err != nil {
 			scanErrors = append(scanErrors, fmt.Sprintf("error scanning image %s: %v", img.ImageName, err))
 		} else {
@@ -307,7 +307,7 @@ func GenerateReport(comparison helmscanTypes.HelmComparison, generateJSON bool, 
 	return reports.GenerateReport(generator, generateJSON, generateMD)
 }
 
-func GenerateSingleScanReport(chart helmscanTypes.HelmChart, jsonOutput bool) string {
+func GenerateSingleScanReport(chart helmscanTypes.HelmChart, jsonOutput bool, ignoreUnfixed bool) string {
 	vulns := make(map[string]helmscanTypes.Vulnerability)
 	for _, img := range chart.ContainsImages {
 		for id, v := range img.Vulnerabilities {
@@ -316,18 +316,18 @@ func GenerateSingleScanReport(chart helmscanTypes.HelmChart, jsonOutput bool) st
 	}
 
 	chartRef := fmt.Sprintf("%s/%s@%s", chart.HelmRepo, chart.Name, chart.Version)
-	return reports.GenerateSingleScanReport("helm", chartRef, vulns, jsonOutput)
+	return reports.GenerateSingleScanReport("helm", chartRef, vulns, jsonOutput, ignoreUnfixed)
 }
 
-func scanSingleHelmChart(chartRef string, saveReport bool, jsonOutput bool) {
+func scanSingleHelmChart(chartRef string, saveReport bool, jsonOutput bool, ignoreUnfixed bool) {
 	logger.Infof("Scanning Helm chart: %s", chartRef)
-	result, err := Scan(chartRef)
+	result, err := Scan(chartRef, ignoreUnfixed)
 	if err != nil {
 		logger.Errorf("Error scanning Helm chart: %v", err)
 		return
 	}
 
-	report := GenerateSingleScanReport(result, jsonOutput)
+	report := GenerateSingleScanReport(result, jsonOutput, ignoreUnfixed)
 
 	if saveReport {
 		ext := ".md"
