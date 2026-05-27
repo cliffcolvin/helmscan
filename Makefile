@@ -3,14 +3,14 @@ LDFLAGS=-ldflags "-X main.Version=$(VERSION)"
 
 .PHONY: build
 build:
-	go build $(LDFLAGS) -o helmscan ./cmd/app
+	go build $(LDFLAGS) -o helmscan ./cmd/helmscan
 
 .PHONY: build-all
 build-all:
-	GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o dist/helmscan_Darwin_x86_64/helmscan ./cmd/app
-	GOOS=darwin GOARCH=arm64 go build $(LDFLAGS) -o dist/helmscan_Darwin_arm64/helmscan ./cmd/app
-	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o dist/helmscan_Linux_x86_64/helmscan ./cmd/app
-	GOOS=windows GOARCH=amd64 go build $(LDFLAGS) -o dist/helmscan_Windows_x86_64/helmscan.exe ./cmd/app
+	GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o dist/helmscan_Darwin_x86_64/helmscan ./cmd/helmscan
+	GOOS=darwin GOARCH=arm64 go build $(LDFLAGS) -o dist/helmscan_Darwin_arm64/helmscan ./cmd/helmscan
+	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o dist/helmscan_Linux_x86_64/helmscan ./cmd/helmscan
+	GOOS=windows GOARCH=amd64 go build $(LDFLAGS) -o dist/helmscan_Windows_x86_64/helmscan.exe ./cmd/helmscan
 
 .PHONY: release
 release:
