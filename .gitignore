@@ -27,3 +27,5 @@ working-files/
 HelmScan
 logs/
 launch.json
+# Added by goreleaser init:
+dist/
