@@ -33,7 +33,7 @@ func init() {
 	logger = zapLogger.Sugar()
 }
 
-func ScanImage(imageName string) (helmscanTypes.ScanResult, error) {
+func ScanImage(imageName string, ignoreUnfixed bool) (helmscanTypes.ScanResult, error) {
 	if err := os.MkdirAll("working-files/tmp/trivy_output", 0755); err != nil {
 		return helmscanTypes.ScanResult{}, fmt.Errorf("failed to create working directory: %w", err)
 	}
@@ -41,13 +41,19 @@ func ScanImage(imageName string) (helmscanTypes.ScanResult, error) {
 	safeFileName := reports.CreateSafeFileName(imageName)
 	outputFile := fmt.Sprintf("working-files/tmp/trivy_output/%s_trivy_output.json", safeFileName)
 
-	cmd := exec.Command("trivy", "image",
+	args := []string{"image",
 		"-f", "json",
 		"-o", outputFile,
 		"--severity", "HIGH,MEDIUM,LOW,CRITICAL",
 		"--pkg-types", "os,library",
-		"--scanners", "vuln,secret,misconfig",
-		imageName)
+		"--scanners", "vuln,secret,misconfig"}
+	
+	if ignoreUnfixed {
+		args = append(args, "--ignore-unfixed")
+	}
+	
+	args = append(args, imageName)
+	cmd := exec.Command("trivy", args...)
 
 	combinedOutput, err := cmd.CombinedOutput()
 	if err != nil {
@@ -229,9 +235,9 @@ func GenerateReport(comparison *helmscanTypes.ImageComparisonReport, generateJSO
 	return reports.GenerateReport(generator, generateJSON, generateMD)
 }
 
-func scanSingleImage(imageURL string, saveReport bool, jsonOutput bool) {
+func scanSingleImage(imageURL string, saveReport bool, jsonOutput bool, ignoreUnfixed bool) {
 	logger.Infof("Scanning image: %s", imageURL)
-	result, err := ScanImage(imageURL)
+	result, err := ScanImage(imageURL, ignoreUnfixed)
 	if err != nil {
 		logger.Errorf("Error scanning image: %v", err)
 		return
@@ -242,7 +248,7 @@ func scanSingleImage(imageURL string, saveReport bool, jsonOutput bool) {
 		vulns[v.ID] = v
 	}
 
-	report := reports.GenerateSingleScanReport("image", imageURL, vulns, jsonOutput)
+	report := reports.GenerateSingleScanReport("image", imageURL, vulns, jsonOutput, ignoreUnfixed)
 
 	if saveReport {
 		ext := ".md"
