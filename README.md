@@ -89,7 +89,7 @@ working-files/
 
 ### Building
 ```bash
-go build -o helmscan cmd/app/main.go
+go build -o helmscan ./cmd/helmscan/main.go
 ```
 This will build the binary for the current platform.
 
