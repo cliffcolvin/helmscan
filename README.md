@@ -6,6 +6,8 @@ When comparing Helm charts, the tool will download the charts and scan every con
 
 ## Installation
 
+All options  are documented in the [INSTALL.md](INSTALL.md)
+
 ### Using Homebrew
 ```bash
 brew tap cliffcolvin/tap
