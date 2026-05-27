@@ -3,9 +3,9 @@ LDFLAGS=-ldflags "-X main.Version=$(VERSION)"
 
 .PHONY: build
 build:
-	GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o dist/helmscan_Darwin_x86_64/helmscan
-	GOOS=darwin GOARCH=arm64 go build $(LDFLAGS) -o dist/helmscan_Darwin_arm64/helmscan
-	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o dist/helmscan_Linux_x86_64/helmscan
+	GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o dist/helmscan_Darwin_x86_64/helmscan ./cmd/app
+	GOOS=darwin GOARCH=arm64 go build $(LDFLAGS) -o dist/helmscan_Darwin_arm64/helmscan ./cmd/app
+	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o dist/helmscan_Linux_x86_64/helmscan ./cmd/app
 
 .PHONY: release
 release: build
