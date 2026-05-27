@@ -34,7 +34,7 @@ Download `helmscan_Windows_x86_64.zip` from releases and extract to your PATH.
 ## From Source
 
 ```bash
-go install github.com/cliffcolvin/helmscan/cmd/app@latest
+go install github.com/cliffcolvin/helmscan/cmd/helmscan@latest
 ```
 
 ## Verify Installation
