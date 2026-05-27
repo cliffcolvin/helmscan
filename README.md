@@ -30,7 +30,7 @@ The tool supports two main operations:
 ### Single Artifact Scanning
 
 ```bash
-helmscan [--json] [--report] <artifact>
+helmscan [--json] [--report] [--ignore-unfixed] <artifact>
 ```
 
 Examples:
@@ -40,12 +40,15 @@ helmscan --json --report docker.io/library/ubuntu:22.04
 
 # Scan a Helm chart
 helmscan --report myrepo/mychart@1.0.0
+
+# Scan showing only fixable vulnerabilities
+helmscan --report --ignore-unfixed myrepo/mychart@1.0.0
 ```
 
 ### Artifact Comparison
 
 ```bash
-helmscan --compare [--json] [--report] <artifact1> <artifact2>
+helmscan --compare [--json] [--report] [--ignore-unfixed] <artifact1> <artifact2>
 ```
 
 Examples:
@@ -55,12 +58,16 @@ helmscan --compare --json --report docker.io/library/ubuntu:20.04 docker.io/libr
 
 # Compare Helm charts
 helmscan --compare --report myrepo/mychart@1.0.0 myrepo/mychart@2.0.0
+
+# Compare showing only fixable vulnerabilities
+helmscan --compare --report --ignore-unfixed myrepo/mychart@1.0.0 myrepo/mychart@2.0.0
 ```
 
 ### Flags
-- `--compare`: Enable comparison mode
-- `--report`: Generate a report file (optional)
+- `--compare`: Enable comparison mode (requires exactly 2 artifacts)
+- `--report`: Generate a report file (optional, saves to `working-files/scans/`)
 - `--json`: Output in JSON format (optional, defaults to markdown)
+- `--ignore-unfixed`: Ignore unfixed vulnerabilities in Trivy scans (optional, shows only CVEs with available fixes)
 
 ### Output
 

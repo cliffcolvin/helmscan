@@ -139,7 +139,7 @@ type SeveritySummary struct {
 	Low      int
 }
 
-func GenerateSingleScanReport(artifactType string, artifactRef string, vulns map[string]helmscanTypes.Vulnerability, generateJSON bool) string {
+func GenerateSingleScanReport(artifactType string, artifactRef string, vulns map[string]helmscanTypes.Vulnerability, generateJSON bool, ignoreUnfixed bool) string {
 	report := SingleScanReport{
 		ArtifactType: artifactType,
 		ArtifactRef:  artifactRef,
@@ -150,7 +150,7 @@ func GenerateSingleScanReport(artifactType string, artifactRef string, vulns map
 	if generateJSON {
 		return GenerateJSONSingleReport(report)
 	}
-	return GenerateMarkdownSingleReport(report)
+	return GenerateMarkdownSingleReport(report, ignoreUnfixed)
 }
 
 func countVulnerabilities(vulns map[string]helmscanTypes.Vulnerability) SeveritySummary {
@@ -197,13 +197,16 @@ func GenerateJSONSingleReport(report SingleScanReport) string {
 	return string(jsonBytes)
 }
 
-func GenerateMarkdownSingleReport(report SingleScanReport) string {
+func GenerateMarkdownSingleReport(report SingleScanReport, ignoreUnfixed bool) string {
 	var sb strings.Builder
 
 	sb.WriteString(fmt.Sprintf("# %s Scan Report\n", strings.Title(report.ArtifactType)))
 	sb.WriteString(fmt.Sprintf("## Artifact: %s\n\n", report.ArtifactRef))
 
 	sb.WriteString("### Vulnerability Summary\n\n")
+	if ignoreUnfixed {
+		sb.WriteString("*Showing fixable CVEs only*\n\n")
+	}
 	sb.WriteString("| Severity | Count |\n")
 	sb.WriteString("|----------|-------|\n")
 	sb.WriteString(fmt.Sprintf("| Critical | %d |\n", report.Summary.Critical))
